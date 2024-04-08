@@ -13,13 +13,13 @@ SECRET_KEY = 'django-insecure-0ncivth_d3g@)#j2_hey#(#31pm#)rp9)nq&g*1epun0ug39=$
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
 
 INSTALLED_APPS = [
-    'channels',
+    'daphne',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -29,14 +29,15 @@ INSTALLED_APPS = [
 ]
 
 # socket
-CHANNEL_LAYERS = {
+CHANNEL_LAYERS={
     'default': {
-        'BACKEND': 'channels_redis.core.RedisChannelLayer',
-        'CONFIG': {
-            "hosts": [{"127.0.0.1", 6379}]
+        'BACKEND':'channels_redis.core.RedisChannelLayer',
+        'CONFIG':{
+            'hosts': [('localhost', 6379)],
         }
-    }
+    },
 }
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

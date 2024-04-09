@@ -3,7 +3,7 @@ import re
 from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.exceptions import StopConsumer
 from channels.layers import get_channel_layer
-from .socketOnEvent import SocketOnEvent
+from .socketEvents import SocketOnEvent
 
 
 def remove_word_and_special_characters(input_string):
@@ -15,17 +15,28 @@ def remove_word_and_special_characters(input_string):
     return result
 
 
+# In the websockets, we just define the on event listener and there is no concept of on and emit like socket.io since
+# it just send the raw data and accourding to the if condition we check the event_type and call the approprate functions
+# and after processing the request we send back the response in same ws request.
+
+# question arises, How then server send the request to the client socket.io part?
+
+# research: https://chat.openai.com/share/4eb85ccc-d417-4561-ae32-5eb6b9815f91
+# https://chat.openai.com/share/2fb30263-eb59-4b7a-a643-0fbbe83e8f64
+
 class WebSocketHandlers(AsyncWebsocketConsumer):
      async def websocket_connect(self, event):
         print("Websocket Connected...", event)
         print("Channel Name...", self.channel_name)
         
+        resCount = 1
+        await self.email_from_sessionUser(resCount)
         await self.accept()
         
      async def websocket_receive(self, event):
       print("text_data", event)
       
-      #         {
+#         {
 #     "event_name": "loginStatus",
 #     "payload": {
 #         "test":"test"
@@ -44,11 +55,8 @@ class WebSocketHandlers(AsyncWebsocketConsumer):
       if event_name == SocketOnEvent.LOGIN_STATUS.value:
          print("Handling event", event_name)
          await self.process_login_status(payload)
-         
-         
       elif event_name == "event2":
          print("Handling event2")
-         
       else:
          print(f"Unknown event: {event_name}")
     
@@ -68,6 +76,9 @@ class WebSocketHandlers(AsyncWebsocketConsumer):
             'username': "username",
             'user_count': "user_count"
         }
+        
+      # emiting method 
+      # await self.emit_from_client("HELLO DATA")
 
         await self.send(text_data=json.dumps(response_data))
         
@@ -88,3 +99,7 @@ class WebSocketHandlers(AsyncWebsocketConsumer):
         
      async def force_stop_config_process(self, data): 
         print("ForceStopUpgradeProcess...", data)
+   
+     async def email_from_sessionUser(self, data): 
+        print("EMAIL FROM SESSION USER")
+   

@@ -1,0 +1,13 @@
+# Similar as emiting the event io.socket.emit("SocketCanStop", true)
+
+
+
+channel_layer = get_channel_layer()
+
+async_to_sync(channel_layer.group_send)(
+    "your_group_name",  # Group name to send the message to
+    {
+        "event_name": "SocketCanStop", 
+        "data": True
+    }
+)
